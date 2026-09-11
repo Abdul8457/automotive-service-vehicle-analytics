@@ -92,3 +92,107 @@ GROUP BY
     v.manufacturer,
     v.model
 ORDER BY highest_recorded_mileage_km DESC;
+
+-- --------------------------------------------------
+-- Advanced SQL analysis
+-- --------------------------------------------------
+
+
+-- 7. Identify vehicles with recurring service activity
+--    (more than one recorded service)
+WITH vehicle_service_counts AS (
+    SELECT
+        vehicle_id,
+        COUNT(service_id) AS service_count
+    FROM service_records
+    GROUP BY vehicle_id
+)
+SELECT
+    v.registration_number,
+    v.manufacturer,
+    v.model,
+    vsc.service_count
+FROM vehicle_service_counts AS vsc
+JOIN vehicles AS v
+    ON vsc.vehicle_id = v.vehicle_id
+WHERE vsc.service_count > 1
+ORDER BY vsc.service_count DESC;
+
+
+-- 8. Rank vehicles by total maintenance cost
+--    using a SQL window function
+WITH vehicle_costs AS (
+    SELECT
+        v.vehicle_id,
+        v.registration_number,
+        v.manufacturer,
+        v.model,
+        ROUND(SUM(sr.service_cost), 2) AS total_maintenance_cost
+    FROM vehicles AS v
+    JOIN service_records AS sr
+        ON v.vehicle_id = sr.vehicle_id
+    GROUP BY
+        v.vehicle_id,
+        v.registration_number,
+        v.manufacturer,
+        v.model
+)
+SELECT
+    registration_number,
+    manufacturer,
+    model,
+    total_maintenance_cost,
+    RANK() OVER (
+        ORDER BY total_maintenance_cost DESC
+    ) AS maintenance_cost_rank
+FROM vehicle_costs
+ORDER BY maintenance_cost_rank;
+
+
+-- 9. Find vehicles with maintenance costs above
+--    the average vehicle maintenance cost
+WITH vehicle_costs AS (
+    SELECT
+        vehicle_id,
+        ROUND(SUM(service_cost), 2) AS total_maintenance_cost
+    FROM service_records
+    GROUP BY vehicle_id
+),
+average_cost AS (
+    SELECT
+        AVG(total_maintenance_cost) AS avg_vehicle_cost
+    FROM vehicle_costs
+)
+SELECT
+    v.registration_number,
+    v.manufacturer,
+    v.model,
+    vc.total_maintenance_cost,
+    ROUND(ac.avg_vehicle_cost, 2) AS average_vehicle_cost
+FROM vehicle_costs AS vc
+JOIN vehicles AS v
+    ON vc.vehicle_id = v.vehicle_id
+CROSS JOIN average_cost AS ac
+WHERE vc.total_maintenance_cost > ac.avg_vehicle_cost
+ORDER BY vc.total_maintenance_cost DESC;
+
+
+-- 10. Count services performed for each vehicle by year
+SELECT
+    v.registration_number,
+    v.manufacturer,
+    v.model,
+    strftime('%Y', sr.service_date) AS service_year,
+    COUNT(sr.service_id) AS number_of_services
+FROM service_records AS sr
+JOIN vehicles AS v
+    ON sr.vehicle_id = v.vehicle_id
+GROUP BY
+    v.vehicle_id,
+    v.registration_number,
+    v.manufacturer,
+    v.model,
+    strftime('%Y', sr.service_date)
+ORDER BY
+    service_year,
+    number_of_services DESC;
