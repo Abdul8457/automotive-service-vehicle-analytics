@@ -52,6 +52,24 @@ def calculate_service_summary(service_data: pd.DataFrame) -> dict:
             float(service_data["service_cost"].mean()), 2
         ),
     }
+def calculate_cost_by_vehicle(service_data: pd.DataFrame) -> pd.DataFrame:
+    """Calculate total service cost for each vehicle."""
+
+    if service_data.empty:
+        return pd.DataFrame(
+            columns=["registration_number", "total_service_cost"]
+        )
+
+    cost_by_vehicle = (
+        service_data.groupby("registration_number", as_index=False)
+        ["service_cost"]
+        .sum()
+        .rename(columns={"service_cost": "total_service_cost"})
+        .sort_values("total_service_cost", ascending=False)
+        .reset_index(drop=True)
+    )
+
+    return cost_by_vehicle    
 
 
 def main() -> None:
