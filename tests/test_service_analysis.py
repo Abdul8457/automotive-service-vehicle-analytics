@@ -3,6 +3,7 @@
 import pandas as pd
 
 from analysis.service_analysis import (
+    calculate_cost_by_service_type,
     calculate_cost_by_vehicle,
     calculate_service_summary,
 )
@@ -61,3 +62,29 @@ def test_calculate_cost_by_vehicle():
 
     assert result.iloc[1]["registration_number"] == "S-CD-202"
     assert result.iloc[1]["total_service_cost"] == 200.00
+
+def test_calculate_cost_by_service_type():
+    """Verify total service cost is calculated for each service type."""
+
+    service_data = pd.DataFrame(
+        {
+            "service_name": [
+                "Oil Change",
+                "Oil Change",
+                "Brake Service",
+            ],
+            "service_cost": [
+                100.00,
+                150.00,
+                300.00,
+            ],
+        }
+    )
+
+    result = calculate_cost_by_service_type(service_data)
+
+    assert result.iloc[0]["service_name"] == "Brake Service"
+    assert result.iloc[0]["total_service_cost"] == 300.00
+
+    assert result.iloc[1]["service_name"] == "Oil Change"
+    assert result.iloc[1]["total_service_cost"] == 250.00
