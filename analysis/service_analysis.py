@@ -70,7 +70,25 @@ def calculate_cost_by_vehicle(service_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     return cost_by_vehicle    
+    
+def calculate_cost_by_service_type(service_data: pd.DataFrame) -> pd.DataFrame:
+    """Calculate total service cost for each service type."""
 
+    if service_data.empty:
+        return pd.DataFrame(
+            columns=["service_name", "total_service_cost"]
+        )
+
+    cost_by_service_type = (
+        service_data.groupby("service_name", as_index=False)
+        ["service_cost"]
+        .sum()
+        .rename(columns={"service_cost": "total_service_cost"})
+        .sort_values("total_service_cost", ascending=False)
+        .reset_index(drop=True)
+    )
+
+    return cost_by_service_type
 
 def main() -> None:
     """Load service data and display a summary."""
