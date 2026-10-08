@@ -1,0 +1,46 @@
+name: Generate Analysis Charts
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate-charts:
+    runs-on: ubuntu-latest
+
+    env:
+      PYTHONPATH: .
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install project dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Initialize database
+        run: |
+          python -m src.database.initialize_db
+
+      - name: Generate vehicle service cost chart
+        run: |
+          python -m analysis.visualize_service_costs
+
+      - name: Generate service type cost chart
+        run: |
+          python -m analysis.visualize_service_type_costs
+
+      - name: Upload generated charts
+        uses: actions/upload-artifact@v4
+        with:
+          name: automotive-service-analysis-charts
+          path: outputs/*.png
