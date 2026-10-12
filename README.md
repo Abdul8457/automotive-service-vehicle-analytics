@@ -51,11 +51,15 @@ This analysis groups service records by vehicle and calculates the total recorde
 
 **Output:** `vehicle_service_costs.png`
 
+![Total Service Cost by Vehicle](outputs/vehicle_service_costs.png)
+
 ### 2. Total Service Cost by Service Type
 
 This analysis groups service records by service type and calculates the total recorded cost for each type of service. It helps identify which service categories account for the highest recorded expenses.
 
 **Output:** `service_type_costs.png`
+
+![Total Service Cost by Service Type](outputs/service_type_costs.png)
 
 ### Running the Visualisation Scripts
 
@@ -84,7 +88,7 @@ The workflow:
 
 The workflow can be triggered manually from the **Actions** tab in GitHub.
 
-The generated charts are available as downloadable artifacts from a successful workflow run.
+The generated charts are uploaded as downloadable workflow artifacts. The committed PNG files are also displayed in this README for convenient review of the analysis results.
 
 ## Database Design
 
@@ -135,7 +139,8 @@ automotive-service-vehicle-analytics/
 │   └── test_service_analysis.py
 │
 ├── outputs/
-│   └── Generated charts
+│   ├── vehicle_service_costs.png
+│   └── service_type_costs.png
 │
 ├── requirements.txt
 ├── README.md
