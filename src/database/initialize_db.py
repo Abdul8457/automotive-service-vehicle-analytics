@@ -21,11 +21,7 @@ def initialize_database() -> None:
     """Recreate the sample database and load its seed data."""
     DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-    # Close any previous connection before resetting the database.
-    with get_connection() as connection:
-        connection.close()
-
-    # Start with a fresh database for predictable sample data.
+    # Remove the old sample database before creating a fresh one.
     if DATABASE_PATH.exists():
         DATABASE_PATH.unlink()
 
