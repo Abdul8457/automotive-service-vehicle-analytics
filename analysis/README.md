@@ -1,15 +1,16 @@
 # Service Analytics
 
-This module analyzes vehicle service and maintenance data from
-the SQLite database.
+This module analyzes vehicle service and maintenance data from the SQLite database using Python, pandas, and SQL.
 
 ## Current Analysis
 
-The service analysis module currently calculates:
+The module currently calculates:
 
 - Total number of service records
 - Total service cost
 - Average service cost
+- Total service cost by vehicle
+- Total service cost by service type
 
 ## Data Sources
 
@@ -19,21 +20,33 @@ The analysis uses data from:
 - `service_records`
 - `service_types`
 
-The data is combined using SQL joins and loaded into a
-pandas DataFrame for further analysis.
+The data is combined using SQL joins and loaded into a pandas DataFrame for analysis.
+
+## Data Visualizations
+
+The project generates two charts using Matplotlib:
+
+- `outputs/vehicle_service_costs.png` — Total service cost by vehicle
+- `outputs/service_type_costs.png` — Total service cost by service type
 
 ## Python Technologies
 
 - Python
 - pandas
 - SQLite
+- Matplotlib
 
-## Planned Analysis
+## Running the Analysis
 
-Future analysis will include:
+From the project root, run:
 
-- Service cost by vehicle
-- Service frequency by service type
-- Maintenance cost trends
-- Vehicle service history comparisons
-- Data visualizations using Matplotlib
+```bash
+python -m analysis.service_analysis
+```
+
+To generate the charts:
+
+```bash
+python -m analysis.visualize_service_costs
+python -m analysis.visualize_service_type_costs
+```
