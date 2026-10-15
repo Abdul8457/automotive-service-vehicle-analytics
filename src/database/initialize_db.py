@@ -1,8 +1,9 @@
+
 """Initialize the SQLite database from the project SQL scripts."""
 
 from pathlib import Path
 
-from src.database.connection import get_connection
+from src.database.connection import DATABASE_PATH, get_connection
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -17,7 +18,17 @@ def execute_sql_file(connection, file_path: Path) -> None:
 
 
 def initialize_database() -> None:
-    """Create the database schema and load the sample data."""
+    """Recreate the sample database and load its seed data."""
+    DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+    # Close any previous connection before resetting the database.
+    with get_connection() as connection:
+        connection.close()
+
+    # Start with a fresh database for predictable sample data.
+    if DATABASE_PATH.exists():
+        DATABASE_PATH.unlink()
+
     with get_connection() as connection:
         execute_sql_file(connection, SCHEMA_FILE)
         execute_sql_file(connection, SEED_FILE)
